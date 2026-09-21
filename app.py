@@ -2,6 +2,9 @@ import streamlit as st
 
 from resume_parser import extract_resume_text
 from text_cleaner import clean_text
+from skill_extractor import load_skills, extract_skills
+
+skills = load_skills("data\skill_dictionary.csv")
 
 st.title("AI Resume Analyzer")
 
@@ -16,6 +19,8 @@ if uploaded_file is not None:
     resume_text = extract_resume_text(uploaded_file) # raw text from uploaded file
 
     cleaned_text = clean_text(resume_text)
+
+    found_skills = extract_skills(cleaned_text, skills)
 
     st.subheader("Extracted Resume Text")
 
@@ -32,3 +37,12 @@ if uploaded_file is not None:
         cleaned_text,
         height=400
     )
+
+    st.subheader("Detected Skills")
+
+    if found_skills:
+
+        for skill in found_skills:
+            st.write("•", skill)
+    else:
+        st.write("No skills detected.")

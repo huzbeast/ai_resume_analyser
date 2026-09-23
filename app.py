@@ -3,8 +3,11 @@ import streamlit as st
 from resume_parser import extract_resume_text
 from text_cleaner import clean_text
 from skill_extractor import load_skills, extract_skills
+from job_matcher import load_job_roles, convert_skills_to_list, calculate_match_scores
 
-skills = load_skills("data\skill_dictionary.csv")
+skills = load_skills("data/skill_dictionary.csv")
+job_roles = load_job_roles("data/job_roles.csv")
+job_roles = convert_skills_to_list(job_roles)
 
 st.title("AI Resume Analyzer")
 
@@ -21,6 +24,8 @@ if uploaded_file is not None:
     cleaned_text = clean_text(resume_text)
 
     found_skills = extract_skills(cleaned_text, skills)
+
+    match_results = calculate_match_scores(found_skills, job_roles)
 
     st.subheader("Extracted Resume Text")
 
@@ -46,3 +51,21 @@ if uploaded_file is not None:
             st.write("•", skill)
     else:
         st.write("No skills detected.")
+
+    st.subheader("Job Role Match")
+
+    st.dataframe(match_results[["role", "match_score"]])
+
+    st.subheader("Missing Skills")
+
+    for index in match_results.index:
+        role = match_results.loc[index, "role"]
+        missing_skills = match_results.loc[index, "missing_skills"]
+
+        st.write(f'### {role}')
+
+        if missing_skills:
+            for skill in missing_skills:
+                st.write("•", skill)
+        else:
+            st.write('No missing skills.')

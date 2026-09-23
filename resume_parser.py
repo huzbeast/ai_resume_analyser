@@ -19,7 +19,7 @@ def extract_text_from_pdf(file):
 def extract_text_from_docx(file):
 
     text = ""
-    document = Document(file)  # Ppens the uploaded document and gives access to paragraphs.
+    document = Document(file)  # Opens the uploaded document and gives access to paragraphs.
 
     # iterating through each paragraph in the docx
     for paragraph in document.paragraphs:

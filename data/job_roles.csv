@@ -1,0 +1,6 @@
+role,required_skills
+Data Analyst,"python,sql,excel,pandas,numpy,matplotlib,power bi"
+Machine Learning Engineer,"python,sql,pandas,numpy,machine learning,scikit-learn,tensorflow,pytorch,git,docker"
+AI Engineer,"python,machine learning,deep learning,pytorch,tensorflow,llm,rag,transformers,fastapi,docker,git"
+NLP Engineer,"python,machine learning,deep learning,nlp,transformers,hugging face,llm,rag,pytorch,git"
+Computer Vision Engineer,"python,machine learning,deep learning,opencv,cnn,yolo,pytorch,tensorflow,numpy,git"

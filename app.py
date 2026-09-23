@@ -4,6 +4,7 @@ from resume_parser import extract_resume_text
 from text_cleaner import clean_text
 from skill_extractor import load_skills, extract_skills
 from job_matcher import load_job_roles, convert_skills_to_list, calculate_match_scores
+from roadmap_generator import generate_roadmap
 
 skills = load_skills("data/skill_dictionary.csv")
 job_roles = load_job_roles("data/job_roles.csv")
@@ -69,3 +70,22 @@ if uploaded_file is not None:
                 st.write("•", skill)
         else:
             st.write('No missing skills.')
+
+    st.subheader("Learning Roadmap")
+    
+    for index in match_results.index:
+        role = match_results.loc[index, "role"]
+        missing_skills = match_results.loc[index, "missing_skills"]
+
+        st.write(f'### {role}')
+
+        if missing_skills:
+            roadmap = generate_roadmap(missing_skills)
+
+            for skill, steps in roadmap.items():
+                st.write(f'**{skill.title()}**')
+                for step in steps:
+                    st.write("•", step)
+        else:
+            st.write("You already have the required skills!")
+        

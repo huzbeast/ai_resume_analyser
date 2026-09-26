@@ -11,6 +11,10 @@ job_roles = load_job_roles("data/job_roles.csv")
 job_roles = convert_skills_to_list(job_roles)
 
 st.title("AI Resume Analyzer")
+st.write(
+    "Upload your resume to analyse your skills,"
+    "job-role mathches, missing skills, and learning roadmap."
+)
 
 uploaded_file = st.file_uploader(
     "Upload your resume",
@@ -27,6 +31,16 @@ if uploaded_file is not None:
     found_skills = extract_skills(cleaned_text, skills)
 
     match_results = calculate_match_scores(found_skills, job_roles)
+
+    st.subheader("Job Role Match comparison")
+
+    chart_data = match_results.set_index("role")[["match_score"]]
+
+    st.bar_chart(
+        chart_data,
+        y="match_score",
+        y_label="Match Score (%)"
+    )
 
     st.subheader("Extracted Resume Text")
 
@@ -55,7 +69,33 @@ if uploaded_file is not None:
 
     st.subheader("Job Role Match")
 
-    st.dataframe(match_results[["role", "match_score"]])
+# Dispaying match scores for each job role
+    for index in match_results.index:
+
+        role = match_results.loc[index, "role"]
+        score = match_results.loc[index, "match_score"]
+
+        st.write(f'**{role}**')
+        
+        st.progress(int(score))
+
+        st.write(f"Match Score: {score:.1f}%")
+
+        st.divider()
+
+    st.subheader("Top Recommended Roles")
+    
+    top_roles = match_results.sort_values(
+        by="match_score",
+        ascending=False
+    ).head(3)
+
+    for index in top_roles.index:
+
+        role = top_roles.loc[index, "role"]
+        score = top_roles.loc[index, "match_score"]
+
+        st.write(f"**{role}** - {score:.1f}% match")    
 
     st.subheader("Missing Skills")
 
@@ -88,4 +128,4 @@ if uploaded_file is not None:
                     st.write("•", step)
         else:
             st.write("You already have the required skills!")
-        
+

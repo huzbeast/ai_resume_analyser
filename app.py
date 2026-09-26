@@ -21,14 +21,40 @@ uploaded_file = st.file_uploader(
     type = ["pdf","docx"]
 )
 
+if uploaded_file is None:
+    st.info("Please upload a PDF or DOCX resume to continue.")
+    st.stop()
+
+
+
 if uploaded_file is not None:
     st.write("File uploaded:", uploaded_file.name)
 
-    resume_text = extract_resume_text(uploaded_file) # raw text from uploaded file
+    try:
+        resume_text = extract_resume_text(uploaded_file) # raw text from uploaded file
+
+    except Exception as e:
+        st.error(f"Could not read the uploaded resume: {e}")
+        st.stop()
+
+    if not resume_text or not resume_text.strip():
+        st.error( 
+            "No readable text was found in this file. "
+            "Please upload a text-based PDF or DOCX file."
+        )
+        st.stop()
 
     cleaned_text = clean_text(resume_text)
-
+    
     found_skills = extract_skills(cleaned_text, skills)
+
+    if not found_skills:
+        st.warning(
+            "No recognized skills were detected. "
+                   "Try uploading a resume containing technical skills"
+                   "such as Python, Java, SQL, etc."
+                   )
+        st.stop()
 
     match_results = calculate_match_scores(found_skills, job_roles)
 

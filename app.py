@@ -51,9 +51,9 @@ if uploaded_file is not None:
     if not found_skills:
         st.warning(
             "No recognized skills were detected. "
-                   "Try uploading a resume containing technical skills"
-                   "such as Python, Java, SQL, etc."
-                   )
+            "Try uploading a resume containing technical skills"
+            "such as Python, Java, SQL, etc."
+        )
         st.stop()
 
     match_results = calculate_match_scores(found_skills, job_roles)

@@ -17,3 +17,6 @@ __pycache__/*.pyc
 
 # Temporary files
 *.tmp
+
+# API key
+.streamlit/secrets.toml

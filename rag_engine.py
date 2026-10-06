@@ -1,3 +1,5 @@
+from ai_analyser import generate_resume_answer
+
 from sentence_transformers import SentenceTransformer
 import chromadb
 
@@ -37,7 +39,7 @@ def chunk_resume_text(text, chunk_size=500, overlap=100):
         # Move forward while retaining some overlapping words.
         start += chunk_size - overlap
 
-        return chunks
+    return chunks
 
 def create_resume_collection(chunks):
     """
@@ -46,9 +48,11 @@ def create_resume_collection(chunks):
     """
 
     # Create a collection to store the resume's information.
-    collection = chroma_client.create_collection(name="resume_collection")
+    collection = chroma_client.get_or_create_collection(
+        name="resume_collection"
+    )
 
-    # Generate a unique ID for each chunk. 
+    # Generate a unique ID for every chunk. 
     chunk_ids = [str(i) for i in range(len(chunks))]
 
     # Convert every chunk into a numerical embedding.
@@ -62,3 +66,16 @@ def create_resume_collection(chunks):
     )
 
     return collection
+
+def search_resume(collection, query, n_results=3):
+    """
+    Search the resume for chunks that are
+    semantically realted to the user's question.
+    """
+
+    query_embedding = embedding_model.encode([query]).tolist()
+
+    results = collection.query(query_embeddings=query_embedding, n_results=n_results)
+
+    return results
+

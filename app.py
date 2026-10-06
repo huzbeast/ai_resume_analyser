@@ -6,6 +6,10 @@ from skill_extractor import load_skills, extract_skills
 from job_matcher import load_job_roles, convert_skills_to_list, calculate_match_scores
 from roadmap_generator import generate_roadmap
 
+from rag_engine import chunk_resume_text, create_resume_collection, search_resume
+
+from ai_analyser import generate_resume_answer
+    
 skills = load_skills("data/skill_dictionary.csv")
 job_roles = load_job_roles("data/job_roles.csv")
 job_roles = convert_skills_to_list(job_roles)
@@ -45,6 +49,18 @@ if uploaded_file is not None:
         st.stop()
 
     cleaned_text = clean_text(resume_text)
+
+    chunks = chunk_resume_text(
+        cleaned_text,
+        chunk_size=100,
+        overlap=20
+    )
+
+    st.info(
+        f"Resume processed into {len(chunks)} knowledge chunks."
+    )
+
+    collection = create_resume_collection(chunks)
     
     found_skills = extract_skills(cleaned_text, skills)
 
@@ -155,3 +171,37 @@ if uploaded_file is not None:
         else:
             st.write("You already have the required skills!")
 
+    st.divider()
+
+    st.subheader("Ask Questions About Your Resume")
+
+    question = st.text_input(
+        "Ask something about your resume:",
+        placeholder="What are my strongest technical skills?"
+    )
+
+    if question:
+        with st.spinner("Searching your resume..."):
+
+            results = search_resume(
+                collection,
+                question,
+                n_results=3
+            )
+
+            retrieved_chunks = results["documents"][0]
+
+            context = "\n\n".join(retrieved_chunks)
+
+        with st.spinner("Generating answer..."):
+
+            answer = generate_resume_answer(
+                question,
+                context            
+            )
+
+        st.markdown('### AI Answer')
+
+        st.write(answer)
+
+        

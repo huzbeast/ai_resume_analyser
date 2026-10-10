@@ -44,7 +44,7 @@ def chunk_resume_text(text, chunk_size=500, overlap=100):
 def create_resume_collection(chunks):
     """
     Convert resume chunks into embeddings and store them 
-    in a ChromaDB collection.
+    in a ChromaDB alongwith metadat.
     """
 
     # Create a collection to store the resume's information.
@@ -53,29 +53,77 @@ def create_resume_collection(chunks):
     )
 
     # Generate a unique ID for every chunk. 
-    chunk_ids = [str(i) for i in range(len(chunks))]
+    chunk_ids = [
+        f"chunk_{i}" 
+        for i in range(len(chunks))
+    ]
 
     # Convert every chunk into a numerical embedding.
     embeddings = embedding_model.encode(chunks).tolist()
 
+    # Store metadata about where each chunk came from in the resume.
+    metadata = [
+        {
+            "chunk_number": i + 1,
+            "source": "resume"
+        }
+        for i in range(len(chunks))
+    ]
+    
     # Store the chunks, their embeddings, and IDs in the collection.
     collection.add(
         documents=chunks,
         embeddings=embeddings,
-        ids=chunk_ids
+        ids=chunk_ids,
+        metadatas=metadata
     )
 
     return collection
 
 def search_resume(collection, query, n_results=3):
     """
-    Search the resume for chunks that are
-    semantically realted to the user's question.
+    Retrieve the most relevant resume chunks
+    for a user's question.
     """
 
     query_embedding = embedding_model.encode([query]).tolist()
 
-    results = collection.query(query_embeddings=query_embedding, n_results=n_results)
+    results = collection.query(
+        query_embeddings=query_embedding, 
+        n_results=n_results,
+        include=[
+            "documents",
+            "metadatas",
+            "distances"
+        ]
+    )
 
     return results
 
+def build_resume_context(results):
+    """
+    Convert ChromaDB search results into a clean
+    context string that can be sent to Gemini.
+    """
+
+    documents = results.get("documents", [[]])[0]
+    metadatas = results.get("metadatas", [[]])[0]
+    distances = results.get("distances", [[]])[0]
+
+    context_parts = []
+
+    for i, document in enumerate(documents):
+
+        chunk_number = metadatas[i]["chunk_number"]
+        distance = distances[i]
+
+        context_parts.append(
+            f"""
+Resume Chunk {chunk_number}
+Relevance distance: {distance:.4f}
+
+{document}
+"""
+        )
+
+    return "\n".join(context_parts)

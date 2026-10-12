@@ -3,7 +3,11 @@ import streamlit as st
 from resume_parser import extract_resume_text
 from text_cleaner import clean_text
 
-from rag_engine import chunk_resume_text, create_resume_collection, search_resume
+from rag_engine import (
+    chunk_resume_text,
+    create_resume_collection,
+    search_resume
+)
 
 from ai_analyser import (
     generate_resume_answer,
@@ -12,11 +16,11 @@ from ai_analyser import (
 )
 
 
-st.title("AI Resume Analyzer")
+st.title("ResumeX")
 
 st.write(
-    "Upload your resume to explore its contents and ask"
-    "AI-powered questions about your skills, projects,"
+    "Upload your resume to explore its contents and ask "
+    "AI-powered questions about your skills, projects, "
     "education, and experience."
 )
 

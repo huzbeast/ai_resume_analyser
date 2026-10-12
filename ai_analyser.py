@@ -98,27 +98,33 @@ def generate_resume_report(resume_text):
     ## 1. Resume Overview 
     Summarize the candidate's background and profile.
 
-    ## 2. Key Strengths
+    ## 2. Projects
+    List the projects explicitly mentioned in the resume.
+    Only use knowledge provied in the resume for the projects.
+    Give a short description of the projects, including overview and the skills 
+    showcased and what problem is solved by the use of the project.
+
+    ## 3. Key Strengths
     Identify demonstrated skills, projects, education, and experience.
     Explain why the strongest points are valuable.
 
-    ## 3. Areas for Improvement
+    ## 4. Areas for Improvement
     Identify unclear descriptions, missing details, and weak presentation.
     Distinguish missing resume information from actual skill deficiencies.
 
-    ## 4. Evidence from the Resume
+    ## 5. Evidence from the Resume
     Give specific examples from the resume supporting your observaions.
     Reference project names or responsibilities where possible.
     Do not fabricate quotations or evidence.
 
-    ## 5. Recommended Improvements
+    ## 6. Recommended Improvements
     Suggest practical, prioritized changes to improve the resume.
 
-    ## 6. Skills to Develop
+    ## 7. Skills to Develop
     Recommend relevant skills based on the candidate's background.
     Clearly distinguish new recommendations from demonstrated skills.
 
-    ## 7. Overall Assessment
+    ## 8. Overall Assessment
     Summarize the resume's strongest points and main opportunities
     for improvement. Do not assign an arbitrary numerical score.
 

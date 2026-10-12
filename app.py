@@ -5,7 +5,12 @@ from text_cleaner import clean_text
 
 from rag_engine import chunk_resume_text, create_resume_collection, search_resume
 
-from ai_analyser import generate_resume_answer
+from ai_analyser import (
+    generate_resume_answer,
+    generate_resume_report,
+    analyze_job_match
+)
+
 
 st.title("AI Resume Analyzer")
 
@@ -23,7 +28,6 @@ uploaded_file = st.file_uploader(
 if uploaded_file is None:
     st.info("Please upload a PDF or DOCX resume to continue.")
     st.stop()
-
 
 
 if uploaded_file is not None:
@@ -73,6 +77,40 @@ if uploaded_file is not None:
         height=400
     )
 
+    st.divider()
+
+    st.subheader("AI Resume Analysis Report")
+
+    if st.button("Generate Resume Report"):
+        with st.spinner("Analyzing your resume..."):
+            report = generate_resume_report(cleaned_text)
+
+        st.markdown(report)
+
+    st.divider()
+
+    st.subheader("Analyze Resume Against a Job Description")
+
+    job_description = st.text_area(
+        "Paste the job description here:",
+        placeholder=(
+            "Paste the responsibilities, required skills, "
+            "qualifications, and experience for the role..."
+        ),
+        height=250,
+        key='job_description'
+    )
+
+    if st.button("Analyze Job Match"):
+        if not job_description.strip():
+            st.warning("Please enter a job description first.")
+        else:
+            with st.spinner("Comparing your resume with the role..."): 
+                job_report = analyze_job_match(cleaned_text, job_description.strip())
+
+            st.markdown("### Job-Specific Analysis")
+            st.markdown(job_report)
+    
     st.divider()
  
     st.subheader("Ask Questions About Your Resume")
